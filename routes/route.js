@@ -12,6 +12,7 @@ const {
     studentLogIn,
     getStudents,
     getStudentDetail,
+    getStudentReview,
     deleteStudents,
     deleteStudent,
     updateStudent,
@@ -41,6 +42,8 @@ router.post('/StudentLogin', studentLogIn)
 
 router.get("/Students/:id", getStudents)
 router.get("/Student/:id", getStudentDetail)
+
+router.get("/Student/review/:studentId", getStudentReview)
 
 router.delete("/Students/:id", deleteStudents)
 router.delete("/StudentsClass/:id", deleteStudentsByClass)

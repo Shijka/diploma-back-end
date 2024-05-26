@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const Student = require('../models/studentSchema.js');
+const Review = require('../models/reviewSchema.js');
 const Subject = require('../models/subjectSchema.js');
 
 const studentRegister = async (req, res) => {
@@ -88,6 +89,14 @@ const getStudentDetail = async (req, res) => {
         }
     } catch (err) {
         res.status(500).json(err);
+    }
+}
+
+const getStudentReview = async (req, res) => {
+    try {
+        const reviews = await Review.findOne({ studentId: req.params.studentId })
+    } catch (e) {
+        res.status(500).json(e);
     }
 }
 
@@ -288,4 +297,6 @@ module.exports = {
     clearAllStudentsAttendance,
     removeStudentAttendanceBySubject,
     removeStudentAttendance,
+
+    getStudentReview
 };
