@@ -13,6 +13,7 @@ const {
     getStudents,
     getStudentDetail,
     getStudentReview,
+    updateStudentReview,
     deleteStudents,
     deleteStudent,
     updateStudent,
@@ -44,6 +45,7 @@ router.get("/Students/:id", getStudents)
 router.get("/Student/:id", getStudentDetail)
 
 router.get("/Student/review/:studentId", getStudentReview)
+router.post("/Student/review/:studentId", updateStudentReview)
 
 router.delete("/Students/:id", deleteStudents)
 router.delete("/StudentsClass/:id", deleteStudentsByClass)

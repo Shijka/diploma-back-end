@@ -5,28 +5,34 @@ const reviewSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    groupName: {
+        type: String,
+    },
+    active_step: {
+        type: String
+    },
     step_1: {
         file_name: String,
         title: String,
-        active: Boolean,
+        finished: Boolean,
         submittedAt: Date
     },
     step_2: {
         file_name: String,
         title: String,
-        active: Boolean,
+        finished: Boolean,
         submittedAt: Date
     },
     step_3: {
         file_name: String,
         title: String,
-        active: Boolean,
+        finished: Boolean,
         submittedAt: Date
     },
     step_4: {
         file_name: String,
         title: String,
-        active: Boolean,
+        finished: Boolean,
         submittedAt: Date
     },
 });

@@ -7,11 +7,12 @@ const studentRegister = async (req, res) => {
     try {
         const salt = await bcrypt.genSalt(10);
         const hashedPass = await bcrypt.hash(req.body.password, salt);
+        const sclassName = req.body.sclassName
 
         const existingStudent = await Student.findOne({
             rollNum: req.body.rollNum,
             school: req.body.adminID,
-            sclassName: req.body.sclassName,
+            sclassName,
         });
 
         if (existingStudent) {
@@ -23,13 +24,46 @@ const studentRegister = async (req, res) => {
                 school: req.body.adminID,
                 password: hashedPass
             });
-
+            
             let result = await student.save();
 
             result.password = undefined;
+
+            const studentReview = new Review({
+                studentId: result._id,
+                groupName: sclassName,
+                active_step: "step_1",
+                step_1: {
+                    file_name: null,
+                    title: null,
+                    finished: null,
+                    submittedAt: null
+                },
+                step_2: {
+                    file_name: null,
+                    title: null,
+                    finished: null,
+                    submittedAt: null
+                },
+                step_3: {
+                    file_name: null,
+                    title: null,
+                    finished: null,
+                    submittedAt: null
+                },
+                step_4: {
+                    file_name: null,
+                    title: null,
+                    finished: null,
+                    submittedAt: null
+                },
+            })
+
+            const reviewRes=await studentReview.save()
             res.send(result);
         }
     } catch (err) {
+        console.error(err)
         res.status(500).json(err);
     }
 };
@@ -95,6 +129,18 @@ const getStudentDetail = async (req, res) => {
 const getStudentReview = async (req, res) => {
     try {
         const reviews = await Review.findOne({ studentId: req.params.studentId })
+        res.send(reviews);
+    } catch (e) {
+        res.status(500).json(e);
+    }
+}
+
+const updateStudentReview = async (req, res) => {
+    try {
+        let result = await Review.findByIdAndUpdate(req.params.id,
+            { $set: req.body },
+            { new: true })
+        res.send(result);
     } catch (e) {
         res.status(500).json(e);
     }
@@ -298,5 +344,6 @@ module.exports = {
     removeStudentAttendanceBySubject,
     removeStudentAttendance,
 
-    getStudentReview
+    getStudentReview,
+    updateStudentReview
 };
