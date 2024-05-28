@@ -137,11 +137,32 @@ const getStudentReview = async (req, res) => {
 
 const updateStudentReview = async (req, res) => {
     try {
-        let result = await Review.findByIdAndUpdate(req.params.id,
-            { $set: req.body },
-            { new: true })
-        res.send(result);
+        const title = req.body.title
+        const file_name = req.file.originalname
+        const studentId = req.params.studentId
+
+        const review = await Review.findOne({ studentId });
+        if (!review) {
+            return res.status(404).json({ message: 'Review not found' });
+        }
+
+        const step = review.active_step;
+        if (step && ['step_1', 'step_2', 'step_3', 'step_4'].includes(step)) {
+            review[step] = { 
+                file_name, 
+                title, 
+                submittedAt: new Date()
+            };
+
+            await review.save();
+
+            return res.json({ message: `${step} updated successfully`, review });
+        } else {
+            return res.status(400).json({ message: 'Invalid active_step' });
+        }
+
     } catch (e) {
+        console.error(e)
         res.status(500).json(e);
     }
 }

@@ -7,6 +7,18 @@ const Subject = require('../models/subjectSchema.js');
 const Notice = require('../models/noticeSchema.js');
 const Complain = require('../models/complainSchema.js');
 
+const mongoose = require('mongoose');
+
+const diplomaWorkSchema = new mongoose.Schema({
+    title: String,
+    description: String,
+    filePath: String,
+    student: String,
+    supervisor: String,
+  });
+  
+const DiplomaWork = mongoose.model('DiplomaWork', diplomaWorkSchema);
+
 // const adminRegister = async (req, res) => {
 //     try {
 //         const salt = await bcrypt.genSalt(10);
@@ -149,4 +161,42 @@ const getAdminDetail = async (req, res) => {
 
 // module.exports = { adminRegister, adminLogIn, getAdminDetail, deleteAdmin, updateAdmin };
 
-module.exports = { adminRegister, adminLogIn, getAdminDetail };
+const getDiplomaWork = async (req, res) => {
+    try {
+        const { search } = req.query;
+        const filter = search ? { title: new RegExp(search, 'i') } : {};
+        const diplomaWorks = await DiplomaWork.find(filter);
+        res.json(diplomaWorks);
+      } catch (error) {
+        console.error('Error fetching diploma works:', error);
+        res.status(500).send(error.message);
+      }
+  }
+
+const postDiplomaWork = async (req, res) => {
+    try {
+        const { title, description, student, supervisor } = req.body;
+        const filePath = req.file ? req.file.path : '';
+        const newDiplomaWork = new DiplomaWork({ title, description, filePath, student, supervisor });
+        await newDiplomaWork.save();
+        res.status(201).send('Diploma work added successfully');
+    } catch (error) {
+        console.error(error)
+        res.status(500).send(error.message);
+    }
+};
+
+const downloadDiplomaWork = async (req, res) => {
+    try {
+      const diplomaWork = await DiplomaWork.findById(req.params.id);
+      if (diplomaWork) {
+        res.download(diplomaWork.filePath);
+      } else {
+        res.status(404).send('File not found');
+      }
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
+}
+
+module.exports = { adminRegister, adminLogIn, getAdminDetail, getDiplomaWork, postDiplomaWork, downloadDiplomaWork };

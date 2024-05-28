@@ -2,7 +2,11 @@ const router = require('express').Router();
 
 // const { adminRegister, adminLogIn, deleteAdmin, getAdminDetail, updateAdmin } = require('../controllers/admin-controller.js');
 
-const { adminRegister, adminLogIn, getAdminDetail} = require('../controllers/admin-controller.js');
+const { adminRegister, adminLogIn, getAdminDetail,
+    getDiplomaWork,
+    postDiplomaWork,
+    downloadDiplomaWork
+} = require('../controllers/admin-controller.js');
 
 const { sclassCreate, sclassList, deleteSclass, deleteSclasses, getSclassDetail, getSclassStudents } = require('../controllers/class-controller.js');
 const { complainCreate, complainList } = require('../controllers/complain-controller.js');
@@ -26,7 +30,23 @@ const {
     removeStudentAttendance } = require('../controllers/student_controller.js');
 const { subjectCreate, classSubjects, deleteSubjectsByClass, getSubjectDetail, deleteSubject, freeSubjectList, allSubjects, deleteSubjects } = require('../controllers/subject-controller.js');
 const { teacherRegister, teacherLogIn, getTeachers, getTeacherDetail, deleteTeachers, deleteTeachersByClass, deleteTeacher, updateTeacherSubject, teacherAttendance } = require('../controllers/teacher-controller.js');
+const multer = require('multer');
+const path = require('path'); // Import the path module
+const bodyParser = require('body-parser');
 
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, path.join(__dirname, '../uploaded'));
+    },
+    filename: (req, file, cb) => {
+        // Use the original file name or modify it as needed
+        cb(null, file.originalname);
+    }
+});
+const upload = multer({ storage: storage });
+// Middleware
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({ extended: true }));
 // Admin
 router.post('/AdminReg', adminRegister);
 router.post('/AdminLogin', adminLogIn);
@@ -35,6 +55,11 @@ router.get("/Admin/:id", getAdminDetail)
 // router.delete("/Admin/:id", deleteAdmin)
 
 // router.put("/Admin/:id", updateAdmin)
+
+router.get('/Admin-api/diploma-work', getDiplomaWork);
+router.post('/Admin-api/diploma-works', upload.single('file'), postDiplomaWork)
+  
+router.get('/Admin-diploma-api/diploma-works/:id/download', downloadDiplomaWork);
 
 // Student
 
@@ -45,7 +70,8 @@ router.get("/Students/:id", getStudents)
 router.get("/Student/:id", getStudentDetail)
 
 router.get("/Student/review/:studentId", getStudentReview)
-router.post("/Student/review/:studentId", updateStudentReview)
+router.post("/Student/review/:studentId", upload.single('file'), updateStudentReview)
+
 
 router.delete("/Students/:id", deleteStudents)
 router.delete("/StudentsClass/:id", deleteStudentsByClass)
